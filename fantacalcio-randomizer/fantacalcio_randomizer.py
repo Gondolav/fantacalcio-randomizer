@@ -4,10 +4,23 @@ import xlrd
 
 
 def extract_players(sheet):
-    names = [value.value for value in sheet.col(2)[2:]]
-    teams = [value.value for value in sheet.col(3)[2:]]
+    return [Player(name.value, team.value) for (name, team) in zip(sheet.col(2)[2:], sheet.col(3)[2:])]
 
-    return list(zip(names, teams))
+
+class Player:
+    """TODO"""
+
+    def __init__(self, name, team):
+        names = name.split()
+        last_name = names[0]
+        self.name = last_name[0] + last_name[1:].lower()
+        if (len(names) > 1):
+            first_name = names[1]
+            self.name += " " + first_name[0] + first_name[1:].lower()
+        self.team = team
+
+    def __repr__(self):
+        return f"{self.name} ({self.team})"
 
 
 class FantaTeam:
@@ -21,7 +34,8 @@ class FantaTeam:
         self.forwards = random.sample(forwards, k=6)
 
     def __repr__(self):
-        return f"Nome squadra: {self.name}\n\nPortieri:\n{self.goalkeepers}\n\nDifensori:\n{self.defenders}\n\nCentrocampisti:\n{self.midfielders}\n\nAttaccanti:\n{self.forwards}"
+        slash_n = '\n'
+        return f"Nome squadra: {self.name}\n\nPortieri:\n{slash_n.join(repr(g) for g in self.goalkeepers)}\n\nDifensori:\n{slash_n.join(repr(d) for d in self.defenders)}\n\nCentrocampisti:\n{slash_n.join(repr(m) for m in self.midfielders)}\n\nAttaccanti:\n{slash_n.join(repr(f) for f in self.forwards)}"
 
 
 def draw_teams(filename, n_teams, teams_names):
